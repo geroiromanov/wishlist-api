@@ -13,7 +13,6 @@ Route::prefix('auth')->group(function () {
 
 
 Route::get('products', [ProductController::class, 'index']);
-Route::middleware('auth:sanctum')->post('products', [ProductController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('wishlist', [WishlistController::class, 'index']);
