@@ -18,8 +18,8 @@ class AuthController extends Controller
             content: new OA\JsonContent(
                 required: ['name', 'email', 'password'],
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Tom Anderson'),
-                    new OA\Property(property: 'email', type: 'string', example: 'tom@anderson.com'),
+                    new OA\Property(property: 'name', type: 'string', example: 'Example User'),
+                    new OA\Property(property: 'email', type: 'string', example: 'example@user.com'),
                     new OA\Property(property: 'password', type: 'string', example: 'password123'),
                 ]
             )
@@ -68,8 +68,8 @@ class AuthController extends Controller
             content: new OA\JsonContent(
                 required: ['email', 'password'],
                 properties: [
-                    new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
-                    new OA\Property(property: 'password', type: 'string', example: 'secret123'),
+                    new OA\Property(property: 'email', type: 'string', example: 'example@user.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'password123'),
                 ]
             )
         ),

@@ -26,15 +26,15 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "John Doe"
+                                        "example": "Example User"
                                     },
                                     "email": {
                                         "type": "string",
-                                        "example": "john@example.com"
+                                        "example": "example@user.com"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "example": "secret123"
+                                        "example": "password123"
                                     }
                                 },
                                 "type": "object"
@@ -81,11 +81,11 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "example": "john@example.com"
+                                        "example": "example@user.com"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "example": "secret123"
+                                        "example": "password123"
                                     }
                                 },
                                 "type": "object"
@@ -95,7 +95,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Token issued",
+                        "description": "Token provided",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -254,6 +254,138 @@
                     }
                 ]
             }
+        },
+        "/api/wishlist": {
+            "get": {
+                "tags": [
+                    "Wishlist"
+                ],
+                "summary": "Get the authenticated user's wishlist",
+                "operationId": "7de9c05c67c97110c68860d9c0b814f9",
+                "responses": {
+                    "200": {
+                        "description": "Wishlist retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "wishlist": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "product_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "T-shirt"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 29.99
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "High-quality cotton T-shirt"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Wishlist"
+                ],
+                "summary": "Add a product to the user's wishlist",
+                "operationId": "b254af311d2f414d5fb8fc20756ba6b0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product added to wishlist"
+                    },
+                    "409": {
+                        "description": "Product already in wishlist"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/wishlist/{product}": {
+            "delete": {
+                "tags": [
+                    "Wishlist"
+                ],
+                "summary": "Remove a product from the user`s wishlist",
+                "operationId": "546e6eab6f65d6df6e720ae590326e4a",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "description": "ID of the product to remove from wishlist",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product removed from wishlist"
+                    },
+                    "404": {
+                        "description": "Product not found in wishlist"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -273,6 +405,10 @@
         {
             "name": "Products",
             "description": "Products"
+        },
+        {
+            "name": "Wishlist",
+            "description": "Wishlist"
         }
     ]
 }
