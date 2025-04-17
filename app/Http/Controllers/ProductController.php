@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
@@ -14,7 +17,7 @@ class ProductController extends Controller
         tags: ['Products'],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: 'List of products',
                 content: new OA\JsonContent(
                     type: 'array',
@@ -32,9 +35,11 @@ class ProductController extends Controller
             )
         ]
     )]
-    public function index()
+    public function index(): JsonResponse
     {
-        return Product::all();
+        $products = Product::all();
+
+        return response()->json($products, Response::HTTP_OK);
     }
 
     #[OA\Post(
@@ -55,7 +60,7 @@ class ProductController extends Controller
         tags: ['Products'],
         responses: [
             new OA\Response(
-                response: 201,
+                response: Response::HTTP_CREATED,
                 description: 'Product created successfully',
                 content: new OA\JsonContent(
                     properties: [
@@ -69,14 +74,13 @@ class ProductController extends Controller
                 )
             ),
             new OA\Response(
-                response: 422,
+                response: Response::HTTP_UNPROCESSABLE_ENTITY,
                 description: 'Validation error'
             )
         ]
     )]
-    public function store( $request)
+    public function store(Request $request): JsonResponse
     {
-        dd($request);
         $validated = $request->validate([
             'name' => 'required|string',
             'price' => 'required|numeric',
@@ -85,7 +89,6 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        return response()->json($product, 201);
+        return response()->json($product, Response::HTTP_CREATED);
     }
-
 }
