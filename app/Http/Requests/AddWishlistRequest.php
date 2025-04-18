@@ -4,12 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditWishlistRequest extends FormRequest
+class AddWishlistRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
-
     }
 
     public function rules(): array

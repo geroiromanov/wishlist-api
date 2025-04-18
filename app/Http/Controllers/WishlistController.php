@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\EditWishlistRequest;
+use App\Http\Requests\AddWishlistRequest;
 use App\Http\Resources\WishlistResource;
 use App\Models\Product;
 use App\Services\WishlistService;
@@ -46,7 +46,6 @@ class WishlistController extends Controller
                     ]
                 )
             ),
-            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Unauthenticated'),
         ]
     )]
     public function index(Request $request): JsonResponse
@@ -81,10 +80,9 @@ class WishlistController extends Controller
             new OA\Response(response: Response::HTTP_CREATED, description: 'Product added to wishlist.'),
             new OA\Response(response: Response::HTTP_CONFLICT, description: 'Product already in wishlist.'),
             new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error.'),
-            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Unauthenticated'),
         ]
     )]
-    public function store(EditWishlistRequest $request): JsonResponse
+    public function store(AddWishlistRequest $request): JsonResponse
     {
         $user = $request->user();
         $productId = $request->input('product_id');
@@ -115,10 +113,9 @@ class WishlistController extends Controller
         responses: [
             new OA\Response(response: Response::HTTP_OK, description: 'Product removed from wishlist'),
             new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Product not found in wishlist'),
-            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Unauthenticated'),
         ]
     )]
-    public function destroy(EditWishlistRequest $request, Product $product): JsonResponse
+    public function destroy(Request $request, Product $product): JsonResponse
     {
         $user = $request->user();
         $productId = $product->id;

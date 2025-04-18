@@ -220,9 +220,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
                     }
                 },
                 "security": [
@@ -265,9 +262,6 @@
                     },
                     "422": {
                         "description": "Validation error."
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
                     }
                 },
                 "security": [
@@ -301,9 +295,6 @@
                     },
                     "404": {
                         "description": "Product not found in wishlist"
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
                     }
                 },
                 "security": [
