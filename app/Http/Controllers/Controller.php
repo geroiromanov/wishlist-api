@@ -15,6 +15,7 @@ use OpenApi\Attributes as OA;
     bearerFormat: 'JWT',
     scheme: 'bearer'
 )]
+//TODO: add psr fixer, pre-commit hook
 abstract class Controller
 {
 }

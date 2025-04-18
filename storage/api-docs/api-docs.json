@@ -177,7 +177,7 @@
                 "tags": [
                     "Wishlist"
                 ],
-                "summary": "Get the authenticated user's wishlist",
+                "summary": "Get the current user`s wishlist",
                 "operationId": "7de9c05c67c97110c68860d9c0b814f9",
                 "responses": {
                     "200": {
@@ -220,6 +220,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
                 },
                 "security": [
@@ -255,13 +258,16 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Product added to wishlist"
+                        "description": "Product added to wishlist."
                     },
                     "409": {
-                        "description": "Product already in wishlist"
+                        "description": "Product already in wishlist."
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
                 },
                 "security": [
@@ -295,6 +301,9 @@
                     },
                     "404": {
                         "description": "Product not found in wishlist"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
                 },
                 "security": [

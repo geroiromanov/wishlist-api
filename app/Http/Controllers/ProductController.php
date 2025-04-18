@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,6 +39,11 @@ class ProductController extends Controller
     {
         $products = Product::all();
 
-        return response()->json($products, Response::HTTP_OK);
+        $productCollection = ProductResource::collection($products);
+
+        return response()->json([
+            'success' => true,
+            'data' => $productCollection
+        ], Response::HTTP_OK);
     }
 }

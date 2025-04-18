@@ -34,4 +34,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Wishlist::class);
     }
+
+    public function hasInWishlist(int $productId): bool
+    {
+        return $this->wishlist()->where('product_id', $productId)->exists();
+    }
 }

@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditWishlistRequest;
+use App\Http\Resources\WishlistResource;
 use App\Models\Product;
-use App\Models\Wishlist;
+use App\Services\WishlistService;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
-
 class WishlistController extends Controller
 {
+    public function __construct(
+        protected WishlistService $wishlistService,
+    )
+    {
+    }
+
     #[OA\Get(
         path: '/api/wishlist',
-        summary: 'Get the authenticated user\'s wishlist',
+        summary: 'Get the current user`s wishlist',
         security: [['sanctum' => []]],
         tags: ['Wishlist'],
         responses: [
@@ -37,24 +45,22 @@ class WishlistController extends Controller
                         )
                     ]
                 )
-            )
+            ),
+            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Unauthenticated'),
         ]
     )]
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $wishlist = $request->user()->wishlist()->with('product')->get();
+        $user = $request->user();
+
+        $wishlists = $user->wishlist()->with('product')->get();
+
+        $wishlistCollection = WishlistResource::collection($wishlists);
 
         return response()->json([
-            'wishlist' => $wishlist->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'product_id' => $item->product->id,
-                    'name' => $item->product->name,
-                    'price' => $item->product->price,
-                    'description' => $item->product->description,
-                ];
-            }),
-        ]);
+            'success' => true,
+            'data' => $wishlistCollection,
+        ], Response::HTTP_OK);
     }
 
     #[OA\Post(
@@ -72,32 +78,24 @@ class WishlistController extends Controller
         ),
         tags: ['Wishlist'],
         responses: [
-            new OA\Response(response: Response::HTTP_CREATED, description: 'Product added to wishlist'),
-            new OA\Response(response: Response::HTTP_CONFLICT, description: 'Product already in wishlist'),
-            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error')
+            new OA\Response(response: Response::HTTP_CREATED, description: 'Product added to wishlist.'),
+            new OA\Response(response: Response::HTTP_CONFLICT, description: 'Product already in wishlist.'),
+            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error.'),
+            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Unauthenticated'),
         ]
     )]
-    public function store(Request $request)
+    public function store(EditWishlistRequest $request): JsonResponse
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-        ]);
-
         $user = $request->user();
+        $productId = $request->input('product_id');
+        $wishlist = $this->wishlistService->add($user, $productId);
 
-        $exists = Wishlist::where('user_id', $user->id)
-            ->where('product_id', $request->product_id)
-            ->exists();
+        $wishlistResource = new WishlistResource($wishlist);
 
-        if ($exists) {
-            return response()->json(['message' => 'Product already in wishlist'], Response::HTTP_CONFLICT);
-        }
-
-        $user->wishlist()->create([
-            'product_id' => $request->product_id,
-        ]);
-
-        return response()->json(['message' => 'Product added to wishlist'], Response::HTTP_CREATED);
+        return response()->json([
+            'success' => true,
+            'data' => $wishlistResource
+        ], Response::HTTP_CREATED);
     }
 
     #[OA\Delete(
@@ -116,21 +114,19 @@ class WishlistController extends Controller
         ],
         responses: [
             new OA\Response(response: Response::HTTP_OK, description: 'Product removed from wishlist'),
-            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Product not found in wishlist')
+            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Product not found in wishlist'),
+            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Unauthenticated'),
         ]
     )]
-    public function destroy(Request $request, Product $product)
+    public function destroy(EditWishlistRequest $request, Product $product): JsonResponse
     {
-        $deleted = $request->user()->wishlist()
-            ->where('product_id', $product->id)
-            ->delete();
+        $user = $request->user();
+        $productId = $product->id;
 
-        if ($deleted) {
-            return response()->json(['message' => 'Product removed from wishlist']);
-        }
+        $isRemoved = $this->wishlistService->remove($user, $productId);
 
-        return response()->json(['message' => 'Product not found in wishlist'], Response::HTTP_NOT_FOUND);
+        return response()->json([
+            'success' => $isRemoved,
+        ], Response::HTTP_OK);
     }
-
-
 }
